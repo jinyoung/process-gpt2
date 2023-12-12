@@ -12,6 +12,10 @@ const router = createRouter({
       component: () => import('../components/ProcessManagerChat.vue'),
     },
     {
+      path: '/process/:id',
+      component: () => import('../components/ProcessDefinition.vue'),
+    },
+    {
       path: '/executes',
       component: () => import('../components/ProcessParticipantChat.vue'),
     },

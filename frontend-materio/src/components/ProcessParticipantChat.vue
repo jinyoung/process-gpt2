@@ -458,7 +458,7 @@ ${value}
     z-index: 999;
     bottom: 20px;
     width: 1211px;
-    height: 400px;
+    height: 600px;
 }
 
 .user-message {

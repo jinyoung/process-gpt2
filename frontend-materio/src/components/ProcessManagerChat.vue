@@ -1,14 +1,5 @@
 <template>
     <div>
-        <vue-bpmn v-if="processDefinition"
-                :key="processDefinition.length"
-                :bpmn="bpmn"
-                :options="options"
-                v-on:error="handleError"
-                v-on:shown="handleShown"
-                v-on:loading="handleLoading"
-        ></vue-bpmn>
-
         <v-card class="chat-open-box">
             <v-card-text class="message-box" ref="messages">
                 <div v-for="(message, index) in messages"
@@ -149,16 +140,8 @@ export default {
         handleClick() {
             this.openChatBox = !this.openChatBox;
         },
-        async init() {
-            const vectorStore = new VectorStorage({ openAIApiKey: this.generator.getToken() });
-            const results = await vectorStore.similaritySearch({
-                query: "processDefinitionName:"
-            });
-            const documents = results.similarItems;
-            console.log(documents);
-
-            this.processDefinition = null;
-            this.bpmn = null;
+        init() {
+            
         },
 
         sendMessage() {
