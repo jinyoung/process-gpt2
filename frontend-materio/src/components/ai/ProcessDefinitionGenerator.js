@@ -12,36 +12,38 @@ export default class ProcessDefinitionGenerator extends AIGenerator{
 
             - 프로세스정의: 내가 업무진행중 프로세스 변경을 이렇게하자고 말하면 해당 프로세스 정의가 그때부터 바뀌는거야. 
             
-            그 결과는 다음 설명과 함께 markdown 으로 리턴해줘:
+            그 결과는 프로세스에 대한 설명과 함께 valid 한 json 으로 표현해줘. 예를 들면 :
             
-            {{프로세스 정의에 대한 자연어 설명}}
+            프로세스에 대한 설명입니다.
 
-            {processDefinitionName: “프로세스 명”,
-             processDefinitionId: "String-based unique id of the processDefinition in English not including space",
-             description: “한글로 된 프로세스 설명”,
-             data: [{
-                 “name”: “process data name”,
-                 “description”: “description of process data”,
-                 “type”: “Text” | “Number” | “Date” | “Boolean” | “Location” | “Document” | “Picture”,
+            --- json ---
+
+            {"processDefinitionName": "프로세스 명",
+             "processDefinitionId": "String-based unique id of the processDefinition in English not including space",
+             "description": "한글로 된 프로세스 설명",
+             "data": [{
+                 "name": "process data name",
+                 "description": "description of process data",
+                 "type": "Text" | "Number" | "Date" | "Boolean" | "Location" | "Document" | "Picture",
               }],
-              roles: [{
-                 “name”: “role name”,
-                 “resolutionRule”: “how to find the actual user mapping for the role”
+              "roles": [{
+                 "name": "role name",
+                 "resolutionRule": "how to find the actual user mapping for the role"
               }],
               activities: [{
-                  “name”: “activity name”,
-                  “id”: “String-based unique id of the activity not including space”,
-                  “type”: “UserActivity” | “EMailActivity” | “ScriptActivity”,,
-                  “description”: “description of activity”,
-                  “instruction”: “instruction to user”,
-                  “role”: “role name”,
-                  “inputData”: [
-                {“name”: “name of data for input”}
+                  "name": "activity name",
+                  "id": "String-based unique id of the activity not including space",
+                  "type": "UserActivity" | "EMailActivity" | "ScriptActivity",,
+                  "description": "description of activity",
+                  "instruction": "instruction to user",
+                  "role": "role name",
+                  "inputData": [
+                {"name": "name of data for input"}
                    ],
-                   “outputData”: [
-                     {“name”: “name of data for output”}
+                   "outputData": [
+                     {"name": "name of data for output"}
                    ],
-                   “checkpoints”:[“checkpoint 1”, “checkpoint 2”],
+                   "checkpoints":["checkpoint 1", "checkpoint 2"],
                    
               }],
               "sequences": [
@@ -60,12 +62,12 @@ export default class ProcessDefinitionGenerator extends AIGenerator{
             
             이 결과는 다음 json format 으로 리턴해줘:
             
-            {processInstanceId: “process instance id”, 
-             description : “description of process instance’s status in natural language”,
-             currentAcitivityId: “the id of current activity id among the process definition”, nextActivityId: “the id of next activity id”,
-             inputData: [{“name”: “name of process data input”, “value”: “real value of the process instance”}],
-             currentRoleMapping: “the real user name of mapped role”,
-             nextRoleMapping: “the real user name of next activity’s role”
+            {processInstanceId: "process instance id", 
+             description : "description of process instance’s status in natural language",
+             currentAcitivityId: "the id of current activity id among the process definition", nextActivityId: "the id of next activity id",
+             inputData: [{"name": "name of process data input", "value": "real value of the process instance"}],
+             currentRoleMapping: "the real user name of mapped role",
+             nextRoleMapping: "the real user name of next activity’s role"
             }
             
             

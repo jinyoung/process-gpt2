@@ -9,7 +9,7 @@
                             class="d-flex justify-end my-2"
                     >
                         <div class="user-message">
-                            {{ message.text }} 
+                            {{ message.content }} 
                         </div>
                         <div class="ml-1">
                             <v-avatar size="48">
@@ -37,7 +37,7 @@
                             </div>
                         </div>
                         <div class="d-flex system-message">
-                            <div v-html="message.text"></div>
+                            <div v-html="message.content"></div>
                         </div>
                         <br>
                         <vue-bpmn v-if="message.bpmn" :key="message.bpmn.length"
@@ -145,7 +145,7 @@ export default {
             this.openChatBox = !this.openChatBox;
         },
         init() {
-            
+            this.loadMessages()
         },
 
         async sendMessage() {
@@ -156,7 +156,7 @@ export default {
                 this.messages.push(
                     {
                         role: "user",
-                        text: this.newMessage
+                        content: this.newMessage
                     }
                 );
 
@@ -170,10 +170,13 @@ export default {
 
                 this.messages.push({
                     role:'system',
-                    text: '.'
+                    content: '.'
                 });
 
                 this.newMessage = "";
+
+                this.saveMessages()
+
             }
         },
 
@@ -195,7 +198,7 @@ export default {
         onModelCreated(response){
 
             let messageWriting = this.messages[this.messages.length -1]
-            messageWriting.text = response
+            messageWriting.content = response
 
             let jsonProcess = this.extractJSON(response)
             if(!jsonProcess)
@@ -207,7 +210,7 @@ export default {
             if(jsonProcess && jsonProcess.processDefinitionId){
 
                 jsonProcess = partialParse(jsonProcess)
-                messageWriting.text = jsonProcess.description
+                messageWriting.content = jsonProcess.description
                 this.processDefinition = jsonProcess
 
                 messageWriting.bpmn = this.createBpmnXml(jsonProcess)
@@ -345,6 +348,8 @@ export default {
             this.loading = false;
             var message;
 
+            this.saveMessages()
+
         },
 
         onError(error) {
@@ -360,13 +365,24 @@ export default {
                 console.log(error)
                 var message = {
                     role:'system',
-                    text: error.message
+                    content: error.message
                 };
 
                 this.messages.push(message);
             }
         },
+        saveMessages(){
+            window.localStorage.setItem("process-instance-conversation", JSON.stringify(this.messages))
+        },
+        loadMessages(){
+            this.messages = JSON.parse(window.localStorage.getItem("process-instance-conversation"))
+            if(!this.messages)
+                this.messages = []
 
+            this.generator.previousMessages = [...this.generator.previousMessages, ...this.messages]
+
+            console.log(this.generator.previousMessages)
+        },
         async doit(message) {
             this.loading = true;
 

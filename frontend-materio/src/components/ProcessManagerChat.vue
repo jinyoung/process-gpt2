@@ -1,7 +1,19 @@
 <template>
     <div>
         <v-card class="chat-open-box">
+
+
             <v-card-text class="message-box" ref="messages">
+
+                <vue-bpmn v-if="bpmn" :key="bpmn.length"
+                    :bpmn="bpmn"
+                    :options="options"
+                    v-on:error="handleError"
+                    v-on:shown="handleShown"
+                    v-on:loading="handleLoading"
+                ></vue-bpmn>
+
+
                 <div v-for="(message, index) in messages"
                         :key="index"
                 >
@@ -67,13 +79,6 @@
             </v-card-text>
 
             <v-card-actions class="chat-box">
-                <!-- <vue-bpmn 
-                        :bpmn="bpmn"
-                        :options="options"
-                        v-on:error="handleError"
-                        v-on:shown="handleShown"
-                        v-on:loading="handleLoading"
-                ></vue-bpmn> -->
 
                 <v-textarea
                         v-model="newMessage"
@@ -119,6 +124,10 @@ export default {
         loading: false,
         openChatBox: false,
         processDefinition: null,
+        // bpmn: `
+        // <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Custom BPMN Modeler" exporterVersion="1.0"><bpmn:process id="VacationRequestProcess" isExecutable="true"><bpmn:task id="VacationRequest" name="휴가 신청"/><bpmn:task id="VacationApproval" name="휴가 승인"/><bpmn:task id="VacationCheck" name="휴가 승인 확인 및 잔여일수 체크"/><bpmn:sequenceFlow id="SequenceFlow_VacationRequest_VacationApproval" sourceRef="VacationRequest" targetRef="VacationApproval"/><bpmn:sequenceFlow id="SequenceFlow_VacationApproval_VacationCheck" sourceRef="VacationApproval" targetRef="VacationCheck"/></bpmn:process><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="VacationRequestProcess"><bpmndi:BPMNShape id="BPMNShape_VacationRequest" bpmnElement="VacationRequest"><dc:Bounds xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" x="100" y="100" width="100" height="80"/></bpmndi:BPMNShape><bpmndi:BPMNShape id="BPMNShape_VacationApproval" bpmnElement="VacationApproval"><dc:Bounds xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" x="250" y="100" width="100" height="80"/></bpmndi:BPMNShape><bpmndi:BPMNShape id="BPMNShape_VacationCheck" bpmnElement="VacationCheck"><dc:Bounds xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" x="400" y="100" width="100" height="80"/></bpmndi:BPMNShape><bpmndi:BPMNEdge id="BPMNEdge_VacationRequest_VacationApproval" bpmnElement="SequenceFlow_VacationRequest_VacationApproval"><di:waypoint xmlns:di="http://www.omg.org/spec/DD/20100524/DI" x="150" y="140"/><di:waypoint xmlns:di="http://www.omg.org/spec/DD/20100524/DI" x="250" y="140"/></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="BPMNEdge_VacationApproval_VacationCheck" bpmnElement="SequenceFlow_VacationApproval_VacationCheck"><di:waypoint xmlns:di="http://www.omg.org/spec/DD/20100524/DI" x="150" y="140"/><di:waypoint xmlns:di="http://www.omg.org/spec/DD/20100524/DI" x="250" y="140"/></bpmndi:BPMNEdge></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>
+        // `
+
         bpmn: null
     }),
     created() {
@@ -173,25 +182,16 @@ export default {
             let messageWriting = this.messages[this.messages.length -1]
             messageWriting.text = response
 
-            let jsonProcess = this.extractJSON(response)
-            if (!jsonProcess) {
-                jsonProcess = this.extractCode(response)
-            }
-            if (response.startsWith("{")) {
-                jsonProcess = response
-            }
-
-            console.log(jsonProcess);
+            let jsonProcess = this.extractProcessJson(response)
 
             if (jsonProcess) {
 
-                jsonProcess = partialParse(jsonProcess)
-                messageWriting.text = jsonProcess.description
-                this.processDefinition = jsonProcess
+                console.log(jsonProcess)
 
-                messageWriting.bpmn = this.createBpmnXml(jsonProcess)
+                this.processDefinition = partialParse(jsonProcess)
+
+                messageWriting.bpmn = this.createBpmnXml(this.processDefinition)
                 this.bpmn = messageWriting.bpmn
-//messageWriting.bpmn = `<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Custom BPMN Modeler" exporterVersion="1.0"><bpmn:process id="휴가신청프로세스" isExecutable="true"><bpmn:task id="휴가신청" name="휴가신청"/><bpmn:task id="휴가승인" name="휴가승인"/><bpmn:task id="허용여부통지" name="허용여부통지"/><bpmn:sequenceFlow id="SequenceFlow_휴가신청_휴가승인" sourceRef="휴가신청" targetRef="휴가승인"/><bpmn:sequenceFlow id="SequenceFlow_휴가승인_허용여부통지" sourceRef="휴가승인" targetRef="허용여부통지"/></bpmn:process><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="휴가신청프로세스"><bpmndi:BPMNShape id="BPMNShape_휴가신청" bpmnElement="휴가신청"><dc:Bounds xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" x="100" y="100" width="100" height="80"/></bpmndi:BPMNShape><bpmndi:BPMNShape id="BPMNShape_휴가승인" bpmnElement="휴가승인"><dc:Bounds xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" x="250" y="100" width="100" height="80"/></bpmndi:BPMNShape><bpmndi:BPMNShape id="BPMNShape_허용여부통지" bpmnElement="허용여부통지"><dc:Bounds xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" x="400" y="100" width="100" height="80"/></bpmndi:BPMNShape><bpmndi:BPMNEdge id="BPMNEdge_휴가신청_휴가승인" bpmnElement="SequenceFlow_휴가신청_휴가승인"><di:waypoint xmlns:di="http://www.omg.org/spec/DD/20100524/DI" x="150" y="140"/><di:waypoint xmlns:di="http://www.omg.org/spec/DD/20100524/DI" x="250" y="140"/></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="BPMNEdge_휴가승인_허용여부통지" bpmnElement="SequenceFlow_휴가승인_허용여부통지"><di:waypoint xmlns:di="http://www.omg.org/spec/DD/20100524/DI" x="150" y="140"/><di:waypoint xmlns:di="http://www.omg.org/spec/DD/20100524/DI" x="250" y="140"/></bpmndi:BPMNEdge></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>`
             
                 console.log(messageWriting.bpmn)
 
@@ -217,7 +217,7 @@ export default {
 
             // Process 요소 생성
             const process = xmlDoc.createElementNS('http://www.omg.org/spec/BPMN/20100524/MODEL', 'bpmn:process');
-            process.setAttribute('id', jsonProcess.processDefinitionId.replace(/\s+/g, '_'));
+            process.setAttribute('id', jsonProcess.processDefinitionId)  //.replace(/\s+/g, '_'));
             process.setAttribute('isExecutable', 'true');
 
             // 각 활동 (Activity) 요소 생성
@@ -298,11 +298,15 @@ export default {
             return xmlString;
         },
 
-        extractJSON(text) {            
-            const regex = /```json\s*([\s\S]*?)(?:\n\s*```|$)/;
-            const match = text.match(regex);
-            return match ? match[1].trim() : null;
+        extractProcessJson(text) {            
+            let textAndJson = text.split("--- json ---")
+            if(textAndJson && textAndJson.length==2) return textAndJson[1]
         },
+        // extractJSON(text) {            
+        //     const regex = /```json\s*([\s\S]*?)(?:\n\s*```|$)/;
+        //     const match = text.match(regex);
+        //     return match ? match[1].trim() : null;
+        // },
         extractXML(text) {            
             const regex = /```xml\s*([\s\S]*?)(?:\n\s*```|$)/;
             const match = text.match(regex);
@@ -331,7 +335,9 @@ export default {
         },
 
         onGenerationFinished(responses){
-            // console.log(responses);
+            console.log(responses);
+
+
             this.loading = false;
             if(this.processDefinition){
                 this.saveDefinition(this.processDefinition)

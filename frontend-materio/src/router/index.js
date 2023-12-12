@@ -8,7 +8,11 @@ const router = createRouter({
       component: () => import('../components/pages/Index.vue'),
     },
     {
-      path: '/managements',
+      path: '/organization',
+      component: () => import('../components/OrganizationChartChat.vue'),
+    },
+    {
+      path: '/definitions',
       component: () => import('../components/ProcessManagerChat.vue'),
     },
     {
@@ -16,11 +20,11 @@ const router = createRouter({
       component: () => import('../components/ProcessDefinition.vue'),
     },
     {
-      path: '/executes',
+      path: '/instances',
       component: () => import('../components/ProcessParticipantChat.vue'),
     },
     {
-      path: '/todolists',
+      path: '/todolist',
       component: () => import('../components/ui/TodolistGrid.vue'),
     },
   ],

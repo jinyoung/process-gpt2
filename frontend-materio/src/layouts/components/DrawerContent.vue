@@ -18,11 +18,18 @@ import { VerticalNavLink, VerticalNavSectionTitle } from '@layouts'
 
 <template>
     <ul>
-        <VerticalNavSectionTitle :item="{ heading: '프로세스 관리' }" />
+        <VerticalNavSectionTitle :item="{ heading: '정의 관리' }" />
         <VerticalNavLink
             :item="{
-                title: '프로세스 관리',
-                to: '/managements',
+                title: '조직도 정의',
+                to: '/organization',
+                icon: 'mdi-plus'
+            }"
+        />
+        <VerticalNavLink
+            :item="{
+                title: '프로세스 정의',
+                to: '/definitions',
                 icon: 'mdi-plus'
             }"
         />
@@ -39,7 +46,7 @@ import { VerticalNavLink, VerticalNavSectionTitle } from '@layouts'
         <VerticalNavLink
             :item="{
                 title: '프로세스 실행',
-                to: '/executes',
+                to: '/instances',
                 icon: 'mdi-plus'
             }"
         />
@@ -48,7 +55,7 @@ import { VerticalNavLink, VerticalNavSectionTitle } from '@layouts'
         <VerticalNavLink
             :item="{
                 title: '할 일',
-                to: '/todolists',
+                to: '/todolist',
             }"
         />
     </ul>
