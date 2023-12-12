@@ -40,25 +40,13 @@
 
 <script>
 import String from './primitives/String.vue'
-import String from './String.vue'
 import Date from './primitives/Date.vue'
-import Date from './Date.vue'
-import Date from './Date.vue'
-import String from './String.vue'
-import String from './String.vue'
-import String from './String.vue'
 
 export default {
     name: 'CreateTodolistCommand',
     components:{
         String,
-        String,
         Date,
-        Date,
-        Date,
-        String,
-        String,
-        String,
     },
     props: {},
     data: () => ({
