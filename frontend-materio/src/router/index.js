@@ -8,6 +8,14 @@ const router = createRouter({
       component: () => import('../components/pages/Index.vue'),
     },
     {
+      path: '/managements',
+      component: () => import('../components/ProcessManagerChat.vue'),
+    },
+    {
+      path: '/executes',
+      component: () => import('../components/ProcessParticipantChat.vue'),
+    },
+    {
       path: '/todolists',
       component: () => import('../components/ui/TodolistGrid.vue'),
     },

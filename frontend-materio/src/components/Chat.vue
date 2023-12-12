@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import ChatGenerator from "./ai/ChatGenerator.js";
+import ChatGenerator from "./ai/ProcessDefinitionGenerator.js";
 import apiSpec from "./api/openapi.js";
 
 import BaseRepository from "./repository/BaseRepository";

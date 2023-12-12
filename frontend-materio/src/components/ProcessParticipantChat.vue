@@ -9,9 +9,6 @@
                             class="d-flex justify-end my-2"
                     >
                         <div class="user-message">
-
-                            
-
                             {{ message.text }} 
                         </div>
                         <div class="ml-1">
@@ -74,23 +71,23 @@
             </v-card-text>
 
             <v-card-actions class="chat-box">
- <!-- <vue-bpmn 
-                                :bpmn="bpmn"
-                                :options="options"
-                                v-on:error="handleError"
-                                v-on:shown="handleShown"
-                                v-on:loading="handleLoading"
-                            ></vue-bpmn> -->
+                <!-- <vue-bpmn 
+                        :bpmn="bpmn"
+                        :options="options"
+                        v-on:error="handleError"
+                        v-on:shown="handleShown"
+                        v-on:loading="handleLoading"
+                ></vue-bpmn> -->
             
-                <v-text-field
+                <v-textarea
                         v-model="newMessage"
                         @keydown.enter="sendMessage"
                         label="Send Message"
+                        rows="1"
+                        auto-grow
                         autofocus
-                        dense
-                        class="px-2"
                 >
-                    <template v-slot:append>
+                    <template v-slot:append-inner>
                         <v-btn @click="sendMessage"
                                 color="primary"
                                 icon
@@ -99,23 +96,23 @@
                             <v-icon>mdi-send</v-icon>
                         </v-btn>
                     </template>
-                </v-text-field>
+                </v-textarea>
             </v-card-actions>
         </v-card>
     </div>
 </template>
 
 <script>
-import ChatGenerator from "../ai/ProcessInstanceGenerator.js";
+import ChatGenerator from "./ai/ProcessInstanceGenerator.js";
 
-import BaseRepository from "../repository/BaseRepository";
+import BaseRepository from "./repository/BaseRepository";
 import axios from "@axios";
 import VueBpmn from './Bpmn.vue';
 import partialParse from "partial-json-parser";
 import { VectorStorage } from "vector-storage"
 
 export default {
-    name: 'Chat',
+    name: 'ProcessParticipantChat',
     components: {
         VueBpmn
     },
@@ -444,34 +441,33 @@ ${value}
 </script>
 
 <style scoped>
-.chat-open-btn {
+/* .chat-open-btn {
     position: fixed;
     z-index: 999;
     bottom: 15px;
     right: 15px;
-}
+} */
 
-.chatgpt-icon {
+/* .chatgpt-icon {
     width: 30px;
     height: 30px;
-}
+} */
+
 .chat-open-box {
     position: fixed;
     z-index: 999;
-    bottom: 90px;
-    right: 15px;
-    width: 1000px;
-    max-width: 1200px;
-    height: 800px;
-    max-height: 600px;
-    padding: 5px;
+    bottom: 20px;
+    width: 1211px;
+    height: 400px;
 }
+
 .user-message {
     background: #9155FD;
     color: #ffffff;
     font-weight: bold;
     padding: 12px;
     border-radius: 20px;
+    max-width: 90%;
 }
 
 .system-message {
@@ -479,7 +475,7 @@ ${value}
     font-weight: bold;
     padding: 12px;
     border-radius: 20px;
-    max-width: 1000px;
+    max-width: 90%;
 }
 
 .system-message > div {
@@ -488,7 +484,7 @@ ${value}
 
 .message-box {
     overflow-y: auto;
-    max-height: 435px;
+    max-height: 80%;
 }
 
 .chat-box {

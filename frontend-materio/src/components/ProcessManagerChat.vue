@@ -1,15 +1,15 @@
 <template>
     <div>
-        <vue-bpmn v-if="processDefinition" :key="processDefinition.length"
-                                :bpmn="bpmn"
-                                :options="options"
-                                v-on:error="handleError"
-                                v-on:shown="handleShown"
-                                v-on:loading="handleLoading"
-                            ></vue-bpmn>
+        <vue-bpmn v-if="processDefinition"
+                :key="processDefinition.length"
+                :bpmn="bpmn"
+                :options="options"
+                v-on:error="handleError"
+                v-on:shown="handleShown"
+                v-on:loading="handleLoading"
+        ></vue-bpmn>
 
         <v-card class="chat-open-box">
-
             <v-card-text class="message-box" ref="messages">
                 <div v-for="(message, index) in messages"
                         :key="index"
@@ -30,7 +30,7 @@
                                 </v-icon>
                             </v-avatar>
                             <div class="subtitle-2 text-center">
-                                {{ message.role }}
+                                User
                             </div>
                         </div>
                     </div>
@@ -45,7 +45,7 @@
                                 </v-icon>
                             </v-avatar>
                             <div class="subtitle-2 text-center">
-                                {{ message.role }}
+                                System
                             </div>
                         </div>
                         <div class="d-flex system-message">
@@ -63,7 +63,7 @@
                             </v-icon>
                         </v-avatar>
                         <div class="subtitle-2 text-center">
-                            system
+                            System
                         </div>
                     </div>
                     <div class="d-flex system-message">
@@ -76,23 +76,23 @@
             </v-card-text>
 
             <v-card-actions class="chat-box">
- <!-- <vue-bpmn 
-                                :bpmn="bpmn"
-                                :options="options"
-                                v-on:error="handleError"
-                                v-on:shown="handleShown"
-                                v-on:loading="handleLoading"
-                            ></vue-bpmn> -->
-            
-                <v-text-field
+                <!-- <vue-bpmn 
+                        :bpmn="bpmn"
+                        :options="options"
+                        v-on:error="handleError"
+                        v-on:shown="handleShown"
+                        v-on:loading="handleLoading"
+                ></vue-bpmn> -->
+
+                <v-textarea
                         v-model="newMessage"
                         @keydown.enter="sendMessage"
                         label="Send Message"
+                        rows="1"
+                        auto-grow
                         autofocus
-                        dense
-                        class="px-2"
                 >
-                    <template v-slot:append>
+                    <template v-slot:append-inner>
                         <v-btn @click="sendMessage"
                                 color="primary"
                                 icon
@@ -101,23 +101,23 @@
                             <v-icon>mdi-send</v-icon>
                         </v-btn>
                     </template>
-                </v-text-field>
+                </v-textarea>
             </v-card-actions>
         </v-card>
     </div>
 </template>
 
 <script>
-import ChatGenerator from "../ai/ProcessDefinitionGenerator.js";
+import ChatGenerator from "./ai/ProcessDefinitionGenerator.js";
 
-import BaseRepository from "../repository/BaseRepository";
+import BaseRepository from "./repository/BaseRepository";
 import axios from "@axios";
 import VueBpmn from './Bpmn.vue';
 import partialParse from "partial-json-parser";
 import { VectorStorage } from "vector-storage"
 
 export default {
-    name: 'Chat',
+    name: 'ProcessManagerChat',
     components: {
         VueBpmn
     },
@@ -128,7 +128,8 @@ export default {
         loading: false,
         openChatBox: false,
         processDefinition: null,
-        bpmn: null    }),
+        bpmn: null
+    }),
     created() {
         this.generator = new ChatGenerator(this, {
             isStream: true,
@@ -148,8 +149,16 @@ export default {
         handleClick() {
             this.openChatBox = !this.openChatBox;
         },
-        init() {
-            
+        async init() {
+            const vectorStore = new VectorStorage({ openAIApiKey: this.generator.getToken() });
+            const results = await vectorStore.similaritySearch({
+                query: "processDefinitionName:"
+            });
+            const documents = results.similarItems;
+            console.log(documents);
+
+            this.processDefinition = null;
+            this.bpmn = null;
         },
 
         sendMessage() {
@@ -182,14 +191,16 @@ export default {
             messageWriting.text = response
 
             let jsonProcess = this.extractJSON(response)
-            if(!jsonProcess)
+            if (!jsonProcess) {
                 jsonProcess = this.extractCode(response)
-            if(response.startsWith("{")){
+            }
+            if (response.startsWith("{")) {
                 jsonProcess = response
             }
 
-console.log(jsonProcess)
-            if(jsonProcess){
+            console.log(jsonProcess);
+
+            if (jsonProcess) {
 
                 jsonProcess = partialParse(jsonProcess)
                 messageWriting.text = jsonProcess.description
@@ -510,34 +521,33 @@ ${value}
 </script>
 
 <style scoped>
-.chat-open-btn {
+/* .chat-open-btn {
     position: fixed;
     z-index: 999;
     bottom: 15px;
     right: 15px;
-}
+} */
 
-.chatgpt-icon {
+/* .chatgpt-icon {
     width: 30px;
     height: 30px;
-}
+} */
+
 .chat-open-box {
     position: fixed;
     z-index: 999;
-    bottom: 50px;
-    right: 15px;
-    width: 1000px;
-    max-width: 1200px;
+    bottom: 20px;
+    width: 1211px;
     height: 600px;
-    max-height: 600px;
-    padding: 5px;
 }
+
 .user-message {
     background: #9155FD;
     color: #ffffff;
     font-weight: bold;
     padding: 12px;
     border-radius: 20px;
+    max-width: 90%;
 }
 
 .system-message {
@@ -545,7 +555,7 @@ ${value}
     font-weight: bold;
     padding: 12px;
     border-radius: 20px;
-    max-width: 1000px;
+    max-width: 90%;
 }
 
 .system-message > div {
@@ -554,7 +564,7 @@ ${value}
 
 .message-box {
     overflow-y: auto;
-    max-height: 435px;
+    max-height: 80%;
 }
 
 .chat-box {

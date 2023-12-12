@@ -140,9 +140,6 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useTheme } from 'vuetify';
-import DrawerContent from '../../../layouts/components/DrawerContent.vue';
 import BaseGrid from '../base-ui/BaseGrid.vue'
 import Todolist from '../Todolist.vue'
 import String from '../primitives/String.vue'
@@ -153,7 +150,6 @@ export default {
     name: 'todolistGrid',
     mixins:[BaseGrid],
     components:{
-        DrawerContent,
         Todolist,
         String,
         Date,

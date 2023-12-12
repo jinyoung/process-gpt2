@@ -59,7 +59,7 @@ const handleNavScroll = evt => {
         >
           <v-icon>mdi-home</v-icon>
           <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
-            processgpt
+            process-gpt
           </h1>
         </RouterLink>
       </slot>
